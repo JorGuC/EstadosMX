@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Municipios con AJAX</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            margin-top: 50px;
+        }
+        h1, h2 {
+            color: #343a40;
+        }
+        .container {
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        select {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Selecciona un Estado</h1>
+        <div class="form-group">
+            <label for="estado-select">Estado</label>
+            <select class="form-control" id="estado-select">
+                <option value="">Seleccione un estado</option>
+                {% for estado in estados %}
+                    <option value="{{ estado.id }}">{{ estado.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <h2>Municipios</h2>
+        <div class="form-group">
+            <label for="municipio-select">Municipio</label>
+            <select class="form-control" id="municipio-select">
+                <option value="">Seleccione un municipio</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#estado-select').change(function() {
+                var estadoId = $(this).val();
+                if (estadoId) {
+                    $.ajax({
+                        url: '/estadosMexApp/cargar-municipios/',
+                        data: {
+                            'estado_id': estadoId
+                        },
+                        success: function(data) {
+                            $('#municipio-select').empty();
+                            $('#municipio-select').append('<option value="">Seleccione un municipio</option>');
+                            data.forEach(function(municipio) {
+                                $('#municipio-select').append('<option value="' + municipio.id + '">' + municipio.nombre + '</option>');
+                            });
+                        },
+                        error: function() {
+                            alert('Error al cargar los municipios.');
+                        }
+                    });
+                } else {
+                    $('#municipio-select').empty();
+                    $('#municipio-select').append('<option value="">Seleccione un municipio</option>');
+                }
+            });
+        });
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
